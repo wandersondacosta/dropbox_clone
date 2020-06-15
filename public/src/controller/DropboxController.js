@@ -171,7 +171,9 @@ class DropBoxController {
     this.inputFilesEL.addEventListener('change', event => {
       this.btnSendFileEL.disabled = true;
       this.uploadTask(event.target.files).then(response => {
-        response.forEach(resp => {          
+        response.forEach(resp => {
+          console.log(resp);
+          
           this.getFirebaseRef().push().set({
             name: resp.name,
             type: resp.contentType,
@@ -228,9 +230,12 @@ class DropBoxController {
       ajax.send(formData);
     });
   }
+
   uploadTask(files) {
     let promises = [];
-    [...files].forEach(files => {     
+
+    [...files].forEach(files => {
+     
       promises.push(new Promise((resolve,reject) => {
         let fileRef = firebase.storage().ref(this.currentFolder.join('/')).child(files.name);
         let task = fileRef.put(files);
@@ -257,6 +262,7 @@ class DropBoxController {
 
     return Promise.all(promises);
   }
+
   uploadProgress(event, file) {
     let timespend = Date.now() - this.startUploadTime;
     let loaded = event.loaded;
@@ -267,7 +273,10 @@ class DropBoxController {
 
     this.nameFileEl.innerHTML = file.name;
     this.timeLeftEl.innerHTML = this.formatTimeToHuman(timeleft);
+
+
   }
+
   formatTimeToHuman(duration) {
     let seconds = parseInt((duration / 1000) % 60);
     let minutes = parseInt((duration / (1000 * 60)) % 60);
@@ -284,6 +293,7 @@ class DropBoxController {
     }
     return '';
   }
+
   getFileIconView(file) {
     switch (file.type) {
       case 'folder':
@@ -297,6 +307,8 @@ class DropBoxController {
         </svg>
         `;
         break;
+
+
       case 'image/jpeg':
       case 'image/jpg':
       case 'image/png':
@@ -342,6 +354,8 @@ class DropBoxController {
         </svg>
         `;
         break;
+
+
       case 'application/pdf':
         return `
           <svg version="1.1" id="Camada_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="160px" height="160px" viewBox="0 0 160 160" enable-background="new 0 0 160 160" xml:space="preserve">
@@ -378,6 +392,8 @@ class DropBoxController {
           </svg>
         `
         break;
+
+
       case 'audio/mp3':
       case 'audio/ogg':
         return `
@@ -400,6 +416,8 @@ class DropBoxController {
         </svg>
         `;
         break;
+
+
       case 'video/mp4':
       case 'video/quicktime':
         return `
@@ -422,6 +440,9 @@ class DropBoxController {
         </svg>
         `;
         break;
+
+
+
       default:
         return `
         <svg width="160" height="160" viewBox="0 0 160 160" class="mc-icon-template-content tile__preview tile__preview--icon">
@@ -444,6 +465,7 @@ class DropBoxController {
 
     }
   }
+
   getFilesView(file, key) {
     let li = document.createElement('li');
     li.dataset.key = key;
@@ -455,8 +477,10 @@ class DropBoxController {
     this.initEventsLi(li);
     return li;
   }
+
   readFiles() {
     this.lastFolder = this.currentFolder.join('/');
+
     this.getFirebaseRef().on('value', snapshot => {
       this.listFilesEl.innerHTML = '';
       snapshot.forEach(snapshotItem => {
@@ -468,6 +492,7 @@ class DropBoxController {
       });
     });
   }
+
   openFolder() {
     if(this.lastFolder) this.getFirebaseRef(this.lastFolder).off('value');
     this.renderNav();
@@ -475,7 +500,8 @@ class DropBoxController {
   }
   renderNav() {
     let nav = document.createElement('nav');
-    let path = [];    
+    let path = [];
+    
     for(let i = 0;i < this.currentFolder.length; i++) {
       let folderName = this.currentFolder[i];
       let span = document.createElement('span');
@@ -495,7 +521,8 @@ class DropBoxController {
           <title>arrow-right</title>
           <path d="M10.414 7.05l4.95 4.95-4.95 4.95L9 15.534 12.536 12 9 8.464z"
               fill="#637282" fill-rule="evenodd"></path>
-        </svg>       `
+        </svg>
+        `
         
       }
       nav.appendChild(span)
@@ -510,6 +537,7 @@ class DropBoxController {
       })
     });
   }
+
   initEventsLi(li) {
     li.addEventListener('dblclick',e => {
       let file = JSON.parse(li.dataset.file);
